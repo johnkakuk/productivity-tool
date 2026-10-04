@@ -1,56 +1,70 @@
-# Welcome to your Expo app 👋
+# Productivity Tool
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A task manager built with Expo for Module 1. Runs on iOS and web.
 
-## Get started
+## Setup
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+You need Node 18+ and, for iOS, Xcode with an iOS simulator.
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Then press `w` for web or `i` for the iOS simulator.
 
-### Other setup steps
+If styles look broken (black text on a black background, for example), restart with a cleared cache:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+npx expo start -c
+```
 
-## Learn more
+## Testing Notes
 
-To learn more about developing your project with Expo, look at the following resources:
+**Platforms tested:** Web and iOS Simulator (iPhone 17 Pro).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+**Check screens:**
 
-## Join the community
+- `/storage-test` – runs SQLite, AsyncStorage, and SecureStore tests
+- `/style-test` – confirms NativeWind/Tailwind is working
 
-Join our community of developers creating universal apps.
+**Known issues:**
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Tasks use SQLite on iOS but AsyncStorage on web, because SQLite won't load on web without extra setup. The app works the same on both, but the storage underneath is different.
+- Settings use SecureStore on iOS. Web has no secure storage, so settings go in localStorage.
+- If you pick Light mode, the app can show dark for a split second on launch while the setting loads.
+- Android hasn't been tested.
+- The code lives in `src/` (`src/app`, `src/components`, and so on), which is newer Expo's default, instead of the top-level folders in the assignment's structure.
+
+## Features
+
+**Works:**
+
+- Create tasks with a title, description, and priority (High, Medium, Low)
+- Mark tasks complete/incomplete, with a checkmark and strikethrough
+- Delete tasks, with a confirmation
+- Priority color coding on each task
+- Filter by All / Open / Done
+- Sort by newest or priority
+- Task stats: total, completed, percent done, and a progress bar
+- Settings: your name (shown on the task list) and theme
+- **Dark mode (enhanced feature):** Dark/Light toggle, saved securely, consistent across every screen
+- Responsive layout: 1 column on phones, 2–3 on wide screens
+
+**Doesn't (yet):**
+
+- Editing a task after it's created
+- Text search (filtering is by completion status only)
+- Remembering the filter and sort after a reload
+
+## Reflection
+
+The most challenging part of cross-platform development was that "the same code" doesn't mean "the same app." Phones and browsers handle storage completely differently, so tasks ended up in SQLite on iOS and AsyncStorage on web. The browser also had its own surprises. Pop-up confirmations silently did nothing on web, and the header's back button refused to change color with the rest of the theme until the screen was reopened. A lot of the work was testing the same feature on both platforms and finding out it only worked on one.
+
+To handle the time constraint, I leaned on AI to troubleshoot, and I focused on getting the required features working before adding anything extra. For the enhanced feature I picked dark mode, partly because I'd already built a light/dark theme for another project (Slate Writer) and could reuse that approach instead of starting from scratch. That saved a ton of time.
+
+With more time, I'd make the storage truly identical on both platforms by getting SQLite running on web. I'd also add task editing, a real text search, and testing on Android, which I skipped entirely. The app would also remember your filter and sort choices between sessions.
+
+What surprised me most was how much of the course material was out of date (zero offense intended Crystal!). The lessons were written for an older version of Expo, so setup steps, package versions, and even some of the provided code didn't work as written. Making the class's code work took as much time as writing my own.
+
+I was also surprised by how one symptom can hide several problems. My seemingly simple "styling doesn't work" problem turned out to be three separate issues: wrong folder paths, a missing config line, and a dev server still running the old setup. Lastly, I didn't expect a hard rule like "always restart the server after changing config" to matter as much as it did. Lots of things that looked broken were just stale.
