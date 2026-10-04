@@ -9,17 +9,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Dark & moody surfaces, darkest (950) to lightest (100)
+        // Theme colors come from CSS variables set per theme in
+        // src/constants/themes.ts (dark & moody by default, light on toggle)
         ink: {
-          950: '#0b0b0f',
-          900: '#131319',
-          800: '#1c1c24',
-          700: '#2a2a34',
-          500: '#6b6b7a',
-          300: '#a1a1b0',
-          100: '#ececf1',
+          950: 'rgb(var(--ink-950) / <alpha-value>)',
+          900: 'rgb(var(--ink-900) / <alpha-value>)',
+          800: 'rgb(var(--ink-800) / <alpha-value>)',
+          700: 'rgb(var(--ink-700) / <alpha-value>)',
+          500: 'rgb(var(--ink-500) / <alpha-value>)',
+          300: 'rgb(var(--ink-300) / <alpha-value>)',
+          100: 'rgb(var(--ink-100) / <alpha-value>)',
         },
-        accent: '#a3e635', // lime-400
+        accent: 'rgb(var(--accent) / <alpha-value>)',
         primary: {
           50: '#eff6ff',
           500: '#3b82f6',

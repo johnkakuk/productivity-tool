@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TextInput, View } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
 // NativeWind v4 uses className directly on components
 interface InputProps {
@@ -23,6 +24,7 @@ export default function Input({
   error,
   disabled = false,
 }: InputProps) {
+  const { colors } = useTheme();
   const inputClasses = [
     'border rounded-xl px-4 py-3 bg-ink-900 text-ink-100 text-base outline-none',
     error ? 'border-rose-400' : 'border-ink-700 focus:border-accent',
@@ -48,7 +50,7 @@ export default function Input({
         // Start multiline text at the top (Android centers it by default)
         textAlignVertical={multiline ? 'top' : 'center'}
         editable={!disabled}
-        placeholderTextColor="#6b6b7a"
+        placeholderTextColor={colors['ink-500']}
       />
       
       {error && (

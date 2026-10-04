@@ -1,8 +1,11 @@
 import { Stack, router } from 'expo-router';
+import { HeaderBackButton } from 'expo-router/react-navigation';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { TasksProvider } from '../context/TasksContext';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
+import { themeVars } from '../constants/themes';
 import config from '../constants/config';
 import '../styles/global.css';
 
@@ -30,21 +33,52 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <TasksProvider>
-      <StatusBar style="light" />
+    <ThemeProvider>
+      <TasksProvider>
+        <AppShell />
+      </TasksProvider>
+    </ThemeProvider>
+  );
+}
+
+// Lives inside ThemeProvider so it can read the current theme
+function AppShell() {
+  const { theme, colors } = useTheme();
+
+  return (
+    // Theme variables go on the root view, the same job Slate Writer's
+    // `document.documentElement.dataset.theme = theme` does (see constants/themes.ts)
+    <View style={[{ flex: 1 }, themeVars(theme)]}>
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: '#0b0b0f' },
-          headerTintColor: '#ececf1',
+          headerStyle: { backgroundColor: colors['ink-950'] },
+          headerTintColor: colors['ink-100'],
           headerShadowVisible: false,
-          contentStyle: { backgroundColor: '#0b0b0f' },
+          contentStyle: { backgroundColor: colors['ink-950'] },
+          // Web only: the back arrow is tinted with an SVG filter, and browsers don't
+          // repaint it when the color changes. key={theme} swaps in a fresh button
+          // on theme change so it recolors instantly with everything else.
+          ...(Platform.OS === 'web' && {
+            headerLeft: ({ canGoBack, tintColor, label, href }) =>
+              canGoBack ? (
+                <HeaderBackButton
+                  key={theme}
+                  tintColor={tintColor}
+                  label={label}
+                  href={href}
+                  onPress={() => router.back()}
+                />
+              ) : null,
+          }),
         }}
       >
         {/* The list draws its own header */}
         <Stack.Screen name="index" options={{ title: 'Tasks', headerShown: false }} />
         <Stack.Screen name="add-task" options={{ title: 'Add Task' }} />
+        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
         <Stack.Screen name="edit-task" options={{ title: 'Edit Task' }} />
       </Stack>
-    </TasksProvider>
+    </View>
   );
 }

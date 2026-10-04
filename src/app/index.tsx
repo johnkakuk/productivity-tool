@@ -7,6 +7,7 @@ import { useTasks } from '../hooks/useTasks';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { handleNavigation } from '@/utils/handleNavigation';
 import Button from '../components/Button';
+import { useTheme } from '../context/ThemeContext';
 
 type Filter = 'all' | 'open' | 'done';
 type SortBy = 'newest' | 'priority';
@@ -35,6 +36,7 @@ export default function TasksScreen() {
   // Replaces two blocks above (now backed by persistent storage instead of TasksContext)
   const { tasks, loading, error, deleteTask, updateTask, refreshTasks } = useTasks();
   const breakpoint = useBreakpoint();
+  const { colors } = useTheme();
   const [filter, setFilter] = useState<Filter>('all');
   const [sortBy, setSortBy] = useState<SortBy>('newest');
 
@@ -194,7 +196,7 @@ export default function TasksScreen() {
 
   return (
     // SafeAreaView isn't a core component, so NativeWind's className doesn't reach it
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#0b0b0f' }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors['ink-950'] }}>
       <FlatList
         data={visibleTasks}
         renderItem={renderTask}
@@ -204,7 +206,18 @@ export default function TasksScreen() {
         contentContainerStyle={{ padding: 20, paddingBottom: 8, flexGrow: 1 }}
         ListHeaderComponent={
           <View className="mb-6 mt-2">
-            <Text className="text-xs font-bold tracking-[4px] uppercase text-accent">Your list</Text>
+            <View className="flex-row items-center justify-between">
+              <Text className="text-xs font-bold tracking-[4px] uppercase text-accent">Your list</Text>
+              <Pressable
+                onPress={() => handleNavigation('/settings')}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel="Settings"
+                className="rounded-full px-3 py-1.5 border border-ink-800 active:bg-ink-800"
+              >
+                <Text className="text-xs font-semibold text-ink-300">Settings</Text>
+              </Pressable>
+            </View>
             <Text className="text-4xl font-black text-ink-100 mt-1">Tasks</Text>
             <Text className="text-sm text-ink-500 mt-1">
               {openCount} open · {doneCount} done

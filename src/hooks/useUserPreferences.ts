@@ -3,7 +3,7 @@ import userPreferencesService from '../services/userPreferences';
 
 export function useUserPreferences() {
   const [preferences, setPreferences] = useState({
-    theme: 'light' as 'light' | 'dark',
+    theme: 'dark' as 'light' | 'dark',
     notifications: true,
     language: 'en',
     username: null as string | null,

@@ -31,7 +31,7 @@ class UserPreferencesService {
       
       // Return default preferences
       return {
-        theme: 'light',
+        theme: 'dark',
         notifications: true,
         language: 'en',
       };
@@ -39,7 +39,7 @@ class UserPreferencesService {
       console.error('Error loading preferences:', error);
       // Return defaults on error
       return {
-        theme: 'light',
+        theme: 'dark',
         notifications: true,
         language: 'en',
       };

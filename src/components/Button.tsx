@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
 // NativeWind v4 uses className directly on components
 interface ButtonProps {
@@ -21,6 +22,7 @@ export default function Button({
   disabled = false,
   fullWidth = false,
 }: ButtonProps) {
+  const { colors } = useTheme();
   const getVariantClasses = () => {
     switch (variant) {
       case 'primary':
@@ -69,7 +71,7 @@ export default function Button({
       disabled={disabled || loading}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#0b0b0f' : '#a3e635'} />
+        <ActivityIndicator color={variant === 'primary' ? colors['ink-950'] : colors.accent} />
       ) : (
         <Text className={getTextClasses()}>
           {title}
