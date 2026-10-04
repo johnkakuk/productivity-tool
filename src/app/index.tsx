@@ -136,7 +136,9 @@ export default function TasksScreen() {
     const priority = priorityStyles[item.priority] ?? priorityStyles.low;
 
     return (
-      <View className={`flex-1 ${getNumColumns() > 1 ? 'mx-1.5' : ''} mb-3`}>
+      // flex-1 only in multi-column mode (to split the row). In a single-column
+      // list on iOS it lets cards shrink to zero height and stack on each other.
+      <View className={`${getNumColumns() > 1 ? 'flex-1 mx-1.5' : ''} mb-3`}>
         <Pressable
           onPress={() => handleToggleComplete(item.id!, item.completed)}
           className={`flex-row items-center rounded-2xl border px-4 py-4 active:bg-ink-800 ${
