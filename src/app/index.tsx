@@ -8,6 +8,7 @@ import { useBreakpoint } from '../hooks/useBreakpoint';
 import { handleNavigation } from '@/utils/handleNavigation';
 import Button from '../components/Button';
 import { useTheme } from '../context/ThemeContext';
+import userPreferencesService from '../services/userPreferences';
 
 type Filter = 'all' | 'open' | 'done';
 type SortBy = 'newest' | 'priority';
@@ -37,6 +38,7 @@ export default function TasksScreen() {
   const { tasks, loading, error, deleteTask, updateTask, refreshTasks } = useTasks();
   const breakpoint = useBreakpoint();
   const { colors } = useTheme();
+  const [username, setUsername] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [sortBy, setSortBy] = useState<SortBy>('newest');
 
@@ -45,6 +47,8 @@ export default function TasksScreen() {
     useCallback(() => {
       console.log('Screen focused, refreshing tasks');
       refreshTasks();
+      // Pick up a name change made in Settings
+      userPreferencesService.getUsername().then(setUsername);
     }, [refreshTasks])
   );
 
@@ -101,6 +105,13 @@ export default function TasksScreen() {
 
   const openCount = tasks.filter(task => !task.completed).length;
   const doneCount = tasks.length - openCount;
+  const percentDone = tasks.length ? Math.round((doneCount / tasks.length) * 100) : 0;
+
+  const STATS = [
+    { label: 'Total', value: tasks.length },
+    { label: 'Completed', value: doneCount },
+    { label: 'Done', value: `${percentDone}%` },
+  ];
 
   const FILTER_OPTIONS: { value: Filter; label: string; count: number }[] = [
     { value: 'all', label: 'All', count: tasks.length },
@@ -207,7 +218,9 @@ export default function TasksScreen() {
         ListHeaderComponent={
           <View className="mb-6 mt-2">
             <View className="flex-row items-center justify-between">
-              <Text className="text-xs font-bold tracking-[4px] uppercase text-accent">Your list</Text>
+              <Text className="text-xs font-bold tracking-[4px] uppercase text-accent">
+                {username?.trim() ? `${username.trim()}'s list` : 'Your list'}
+              </Text>
               <Pressable
                 onPress={() => handleNavigation('/settings')}
                 hitSlop={10}
@@ -219,9 +232,21 @@ export default function TasksScreen() {
               </Pressable>
             </View>
             <Text className="text-4xl font-black text-ink-100 mt-1">Tasks</Text>
-            <Text className="text-sm text-ink-500 mt-1">
-              {openCount} open · {doneCount} done
-            </Text>
+
+            {/* Task statistics */}
+            <View className="flex-row gap-8 mt-4">
+              {STATS.map(stat => (
+                <View key={stat.label}>
+                  <Text className="text-2xl font-black text-ink-100">{stat.value}</Text>
+                  <Text className="text-[10px] font-bold tracking-widest uppercase text-ink-500">
+                    {stat.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+            <View className="h-1 rounded-full bg-ink-800 mt-3 overflow-hidden">
+              <View className="h-full rounded-full bg-accent" style={{ width: `${percentDone}%` }} />
+            </View>
 
             {/* Filters on the left, sort toggle on the right */}
             <View className="flex-row items-center justify-between mt-5">
